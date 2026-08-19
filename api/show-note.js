@@ -6,17 +6,14 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-
   try {
     const { type, location, videoRecorded, audioRecorded, crowdwork, howItWent, quickNote, time } = req.body;
-
     const now = new Date();
     const hours = now.getHours();
     const displayHour = hours % 12 || 12;
     const ampm = hours >= 12 ? 'pm' : 'am';
     const timeStr = time || `${displayHour}${ampm}`;
     const name = `${timeStr} ${type} - ${location}`;
-
     const properties = {
       'Name': { title: [{ text: { content: name } }] },
       'TYPE': { select: { name: type } },
@@ -26,11 +23,9 @@ module.exports = async (req, res) => {
       "How'd it go?": { status: { name: howItWent } },
       'Location': { multi_select: [{ name: location }] }
     };
-
     if (quickNote) {
       properties['Quick Note'] = { rich_text: [{ text: { content: quickNote } }] };
     }
-
     const page = await createPage(process.env.SHOW_NOTES_DB_ID, properties);
     res.status(200).json({ success: true, id: page.id });
   } catch (err) {
