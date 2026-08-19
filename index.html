@@ -473,15 +473,6 @@
   <div class="section-title">New Paid Gig</div>
 
   <div class="field">
-    <div class="field-label">Payment Received?</div>
-    <div class="toggle-group">
-      <button class="toggle-btn" id="togPaymentReceived" onclick="toggle(this)"><span class="t-icon">✅</span>Paid?</button>
-    </div>
-  </div>
-
-  <hr class="section-divider">
-
-  <div class="field">
     <div class="field-label">Gig Name <span class="optional">(optional)</span></div>
     <input type="text" id="gigName" placeholder="" autocomplete="off">
   </div>
@@ -552,6 +543,13 @@
     <div class="field-label">Expenses <span class="optional">(optional)</span></div>
     <div id="expenseRows"></div>
     <button class="add-expense-btn" onclick="addExpenseRow()">+ Add Expense</button>
+  </div>
+
+  <div class="field">
+    <div class="field-label">Payment Received?</div>
+    <div class="toggle-group">
+      <button class="toggle-btn" id="togPaymentReceived" onclick="toggle(this)"><span class="t-icon">✅</span>Paid?</button>
+    </div>
   </div>
 
   <button class="submit-btn" id="submitPaidGig" onclick="submitPaidGig()">Add to Notion →</button>
