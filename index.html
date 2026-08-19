@@ -468,7 +468,7 @@
     if (type) parts.push(type);
     if (type || loc) parts.push('-');
     if (loc) parts.push(loc);
-    document.getElementById('namePreviewText').textContent = parts.length > 1 ? parts.join(' ') : '—';
+    // name preview removed
   }
 
   function toast(msg, type = 'success') {
@@ -515,7 +515,6 @@
     document.getElementById('quickNote').value = '';
     document.getElementById('customLocation').value = '';
     document.getElementById('customLocationWrap').style.display = 'none';
-    document.getElementById('namePreviewText').textContent = '—';
   }
 
   async function submitContact() {
