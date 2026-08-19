@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   try {
-    const { type, location, videoRecorded, audioRecorded, crowdwork, howItWent, quickNote, paid, amountPaid, paymentType } = req.body;
+    const { type, location, videoRecorded, audioRecorded, crowdwork, howItWent, quickNote, paid, amountPaid, paymentType, expenses } = req.body;
     const name = `${type} - ${location}`;
     const properties = {
       'Name': { title: [{ text: { content: name } }] },
@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
     }
     const page = await createPage(process.env.SHOW_NOTES_DB_ID, properties);
 
-    // Optionally create a linked income entry
+    // Optionally create a linked income entry + expenses
     if (paid) {
       const today = new Date().toISOString().split('T')[0];
       const incomeProps = {
@@ -34,7 +34,23 @@ module.exports = async (req, res) => {
         'Gig Date':     { date: { start: today } },
       };
       if (paymentType) incomeProps['Payment Type'] = { select: { name: paymentType } };
-      await createPage(process.env.INCOME_DB_ID, incomeProps);
+      const incomePage = await createPage(process.env.INCOME_DB_ID, incomeProps);
+
+      // Create linked expense entries
+      for (const exp of expenses || []) {
+        if (!exp.type || !exp.amount) continue;
+        try {
+          await createPage(process.env.EXPENSES_DB_ID, {
+            'Description':            { title: [{ text: { content: exp.type } }] },
+            'Amount':                 { number: parseFloat(exp.amount) || 0 },
+            'Expesive Type':          { select: { name: exp.type } },
+            'Expense Date':           { date: { start: today } },
+            'Connected to which Gig': { relation: [{ id: incomePage.id }] },
+          });
+        } catch (e) {
+          console.error('Expense error:', e.message);
+        }
+      }
     }
 
     res.status(200).json({ success: true, id: page.id });
