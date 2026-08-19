@@ -136,6 +136,7 @@
   .opt-btn[data-val="Bombed"].selected         { border-color: #666; background: rgba(120,120,120,0.12); color: #aaa; }
 
   #customLocationWrap { display: none; margin-top: 8px; }
+  .section-divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 
   /* ── Toggles ── */
   .toggle-group { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -288,6 +289,10 @@
 <div class="view" id="showNoteView">
   <div class="section-title">New Show Note</div>
 
+  <div class="name-preview">Name: <span id="namePreviewText">—</span></div>
+
+  <hr class="section-divider">
+
   <div class="field">
     <div class="field-label">Type</div>
     <div class="btn-group" id="typeGroup">
@@ -295,6 +300,8 @@
       <button class="opt-btn" data-val="HOST" onclick="pick('typeGroup',this)">🎙️ HOST</button>
     </div>
   </div>
+
+  <hr class="section-divider">
 
   <div class="field">
     <div class="field-label">Location</div>
@@ -316,7 +323,7 @@
     </div>
   </div>
 
-  <div class="name-preview">Name: <span id="namePreviewText">—</span></div>
+  <hr class="section-divider">
 
   <div class="field">
     <div class="field-label">Recorded / Crowdwork</div>
@@ -327,6 +334,8 @@
     </div>
   </div>
 
+  <hr class="section-divider">
+
   <div class="field">
     <div class="field-label">How'd it go?</div>
     <div class="btn-group" id="howGroup">
@@ -336,6 +345,8 @@
       <button class="opt-btn" data-val="Bombed"         onclick="pick('howGroup',this)">Bombed</button>
     </div>
   </div>
+
+  <hr class="section-divider">
 
   <div class="field">
     <div class="field-label">Quick Note <span class="optional">(optional)</span></div>
