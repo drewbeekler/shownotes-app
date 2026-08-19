@@ -496,7 +496,7 @@
         })
       });
       const data = await res.json();
-      if (data.success) { toast(`✅ "${data.name}" saved!`); resetShowNote(); }
+      if (data.success) { toast(`✅ Saved!`); resetShowNote(); setTimeout(showDashboard, 1000); }
       else toast(`Error: ${data.error}`, 'error');
     } catch { toast('Connection error', 'error'); }
 
