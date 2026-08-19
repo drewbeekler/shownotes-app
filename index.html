@@ -124,9 +124,12 @@
   .opt-btn[data-val="Big wave"].selected     { border-color: #5c9de0; background: rgba(92,157,224,0.12); color: #80b4f0; }
   .opt-btn[data-val="Broadway"].selected     { border-color: #5c9de0; background: rgba(92,157,224,0.12); color: #80b4f0; }
   .opt-btn[data-val="NYCC - East 4th"].selected { border-color: #9b7de0; background: rgba(155,125,224,0.12); color: #b89ff0; }
+  .opt-btn[data-val="Excellent"].selected      { border-color: #f7c948; background: rgba(247,201,72,0.12); color: #f7d970; }
   .opt-btn[data-val="Better than Ok"].selected { border-color: #9b59b6; background: rgba(155,89,182,0.15); color: #c090e0; }
   .opt-btn[data-val="OK"].selected             { border-color: #27ae60; background: rgba(39,174,96,0.12); color: #5dce88; }
   .opt-btn[data-val="Bombed"].selected         { border-color: #666; background: rgba(120,120,120,0.12); color: #aaa; }
+
+  #customLocationWrap { display: none; margin-top: 8px; }
 
   /* ── Toggles ── */
   .toggle-group { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -299,6 +302,10 @@
       <button class="opt-btn" data-val="Big wave"       onclick="pick('locationGroup',this)">Big Wave</button>
       <button class="opt-btn" data-val="Broadway"       onclick="pick('locationGroup',this)">Broadway</button>
       <button class="opt-btn" data-val="NYCC - East 4th" onclick="pick('locationGroup',this)">NYCC</button>
+      <button class="opt-btn" data-val="Other"          onclick="pick('locationGroup',this)">✏️ Other</button>
+    </div>
+    <div id="customLocationWrap">
+      <input type="text" id="customLocation" placeholder="Type location…" oninput="updateNamePreview()">
     </div>
   </div>
 
@@ -316,6 +323,7 @@
   <div class="field">
     <div class="field-label">How'd it go?</div>
     <div class="btn-group" id="howGroup">
+      <button class="opt-btn" data-val="Excellent"      onclick="pick('howGroup',this)">🌟 Excellent</button>
       <button class="opt-btn" data-val="Better than Ok" onclick="pick('howGroup',this)">⭐ Better than OK</button>
       <button class="opt-btn" data-val="OK"             onclick="pick('howGroup',this)">👍 OK</button>
       <button class="opt-btn" data-val="Bombed"         onclick="pick('howGroup',this)">💣 Bombed</button>
@@ -414,6 +422,15 @@
   function pick(groupId, btn) {
     document.querySelectorAll(`#${groupId} .opt-btn`).forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
+    if (groupId === 'locationGroup') {
+      const wrap = document.getElementById('customLocationWrap');
+      if (btn.dataset.val === 'Other') {
+        wrap.style.display = 'block';
+      } else {
+        wrap.style.display = 'none';
+        document.getElementById('customLocation').value = '';
+      }
+    }
     updateNamePreview();
   }
 
@@ -431,7 +448,8 @@
 
   function updateNamePreview() {
     const type = getSelected('typeGroup');
-    const loc  = getSelected('locationGroup');
+    const locSel = getSelected('locationGroup');
+    const loc = locSel === 'Other' ? document.getElementById('customLocation').value.trim() : locSel;
     const time = document.getElementById('timeInput').value.trim();
     const parts = [];
     if (time) parts.push(time);
@@ -450,10 +468,11 @@
 
   async function submitShowNote() {
     const type      = getSelected('typeGroup');
-    const location  = getSelected('locationGroup');
+    const locSel    = getSelected('locationGroup');
+    const location  = locSel === 'Other' ? document.getElementById('customLocation').value.trim() : locSel;
     const howItWent = getSelected('howGroup');
     if (!type)      { toast('Pick a type', 'error'); return; }
-    if (!location)  { toast('Pick a location', 'error'); return; }
+    if (!location)  { toast('Pick or enter a location', 'error'); return; }
     if (!howItWent) { toast("Pick how it went", 'error'); return; }
 
     const btn = document.getElementById('submitShowNote');
@@ -484,6 +503,8 @@
     document.querySelectorAll('#showNoteView .opt-btn, #showNoteView .toggle-btn').forEach(b => b.classList.remove('selected','on'));
     document.getElementById('timeInput').value = '';
     document.getElementById('quickNote').value = '';
+    document.getElementById('customLocation').value = '';
+    document.getElementById('customLocationWrap').style.display = 'none';
     document.getElementById('namePreviewText').textContent = '—';
   }
 
