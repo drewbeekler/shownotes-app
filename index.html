@@ -465,7 +465,7 @@
 
   <div class="field">
     <div class="field-label">Gig Name <span class="optional">(optional)</span></div>
-    <input type="text" id="gigName" placeholder="e.g. Naked Comedy Show Spot" autocomplete="off">
+    <input type="text" id="gigName" placeholder="Gig name…" autocomplete="off">
   </div>
 
   <hr class="section-divider">
@@ -526,13 +526,6 @@
       <button class="opt-btn" data-val="PayPal" onclick="pick('paymentTypeGroup',this)">PayPal</button>
       <button class="opt-btn" data-val="Wired"  onclick="pick('paymentTypeGroup',this)">Wired</button>
     </div>
-  </div>
-
-  <hr class="section-divider">
-
-  <div class="field">
-    <div class="field-label">Gig Contact <span class="optional">(optional)</span></div>
-    <input type="text" id="gigContact" placeholder="Name or @handle" autocomplete="off">
   </div>
 
   <hr class="section-divider">
@@ -783,7 +776,6 @@
           location,
           amountPaid:   parseFloat(document.getElementById('amountPaid').value) || 0,
           additionalPay: parseFloat(document.getElementById('additionalPay').value) || 0,
-          gigContact:   document.getElementById('gigContact').value.trim(),
           paymentType,
           expenses,
         })
@@ -797,7 +789,7 @@
   }
 
   function resetPaidGig() {
-    ['gigName','amountPaid','additionalPay','gigContact'].forEach(id => document.getElementById(id).value = '');
+    ['gigName','amountPaid','additionalPay'].forEach(id => document.getElementById(id).value = '');
     document.querySelectorAll('#paidGigView .opt-btn').forEach(b => b.classList.remove('selected'));
     document.getElementById('expenseRows').innerHTML = '';
     document.getElementById('gigCustomLocationWrap').style.display = 'none';
