@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
     const { gigName, typeOfSpot, location, amountPaid, additionalPay, gigContact, paymentType, expenses } = req.body;
 
     const today = new Date().toISOString().split('T')[0];
-    const name = gigName || `${typeOfSpot} - ${location}`;
+    const name = gigName ? `${typeOfSpot} - ${gigName}` : `${typeOfSpot} - ${location}`;
 
     const properties = {
       'Gig Name':     { title: [{ text: { content: name } }] },

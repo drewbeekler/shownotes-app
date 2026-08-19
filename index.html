@@ -465,7 +465,7 @@
 
   <div class="field">
     <div class="field-label">Gig Name <span class="optional">(optional)</span></div>
-    <input type="text" id="gigName" placeholder="Gig name…" autocomplete="off">
+    <input type="text" id="gigName" placeholder="Broadway 9pm, Naked Comedy…" autocomplete="off">
   </div>
 
   <hr class="section-divider">
@@ -584,6 +584,13 @@
         wrap.style.display = 'none';
         document.getElementById('gigCustomLocation').value = '';
       }
+    }
+    if (groupId === 'gigTypeGroup' && btn.dataset.val === 'Editing') {
+      document.querySelectorAll('#gigLocationGroup .opt-btn').forEach(b => b.classList.remove('selected'));
+      const homeBtn = document.querySelector('#gigLocationGroup .opt-btn[data-val="Home"]');
+      if (homeBtn) homeBtn.classList.add('selected');
+      document.getElementById('gigCustomLocationWrap').style.display = 'none';
+      document.getElementById('gigCustomLocation').value = '';
     }
     updateNamePreview();
   }
