@@ -136,7 +136,17 @@
   .opt-btn[data-val="Bombed"].selected         { border-color: #666; background: rgba(120,120,120,0.12); color: #aaa; }
 
   #customLocationWrap { display: none; margin-top: 8px; }
+  #gigCustomLocationWrap { display: none; margin-top: 8px; }
   .section-divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+  .dash-btn-full { margin-top: 14px; width: 100%; padding: 22px 16px; display: flex; align-items: center; gap: 16px; text-align: left; }
+  .dash-btn-full .icon { font-size: 28px; margin-bottom: 0; }
+  .dash-btn-full .label { font-size: 16px; font-weight: 700; }
+  .dash-btn-full .sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .expense-row { background: var(--surface2); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 10px; }
+  .expense-amount-row { display: flex; gap: 8px; margin-top: 8px; align-items: center; }
+  .expense-amount-row input { flex: 1; }
+  .remove-expense-btn { background: none; border: 1px solid #444; color: #888; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 16px; flex-shrink: 0; }
+  .add-expense-btn { width: 100%; padding: 12px; background: var(--surface2); border: 1px dashed var(--border); border-radius: var(--radius-sm); color: var(--text-dim); font-size: 14px; cursor: pointer; margin-bottom: 20px; }
 
   /* ── Toggles ── */
   .toggle-group { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -283,6 +293,13 @@
       <div class="sub">Add a comic</div>
     </button>
   </div>
+  <button class="dash-btn dash-btn-full" onclick="showForm('paidGig')">
+    <div class="icon">💰</div>
+    <div>
+      <div class="label">Paid Gig</div>
+      <div class="sub">Log income &amp; expenses</div>
+    </div>
+  </button>
 </div>
 
 <!-- SHOW NOTE FORM -->
@@ -411,11 +428,94 @@
   <button class="submit-btn" id="submitContact" onclick="submitContact()">Add to Notion →</button>
 </div>
 
+<!-- PAID GIG FORM -->
+<div class="view" id="paidGigView">
+  <div class="section-title">New Paid Gig</div>
+
+  <div class="field">
+    <div class="field-label">Gig Name <span class="optional">(optional)</span></div>
+    <input type="text" id="gigName" placeholder="e.g. Naked Comedy Show Spot" autocomplete="off">
+  </div>
+
+  <hr class="section-divider">
+
+  <div class="field">
+    <div class="field-label">Type</div>
+    <div class="btn-group" id="gigTypeGroup">
+      <button class="opt-btn" data-val="Spot"    onclick="pick('gigTypeGroup',this)">Spot</button>
+      <button class="opt-btn" data-val="Host"    onclick="pick('gigTypeGroup',this)">Host</button>
+      <button class="opt-btn" data-val="Editing" onclick="pick('gigTypeGroup',this)">Editing</button>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <div class="field">
+    <div class="field-label">Location</div>
+    <div class="btn-group" id="gigLocationGroup">
+      <button class="opt-btn" data-val="Broadway"         onclick="pick('gigLocationGroup',this)">Broadway</button>
+      <button class="opt-btn" data-val="Greenwich"        onclick="pick('gigLocationGroup',this)">Greenwich</button>
+      <button class="opt-btn" data-val="Big Wave"         onclick="pick('gigLocationGroup',this)">Big Wave</button>
+      <button class="opt-btn" data-val="NYCC - East 4th"  onclick="pick('gigLocationGroup',this)">NYCC - East 4th</button>
+      <button class="opt-btn" data-val="NYCC - 24th"      onclick="pick('gigLocationGroup',this)">NYCC - 24th</button>
+      <button class="opt-btn" data-val="NYCC - UWS"       onclick="pick('gigLocationGroup',this)">NYCC - UWS</button>
+      <button class="opt-btn" data-val="Hell yeah"        onclick="pick('gigLocationGroup',this)">Hell yeah</button>
+      <button class="opt-btn" data-val="The Dulpex"       onclick="pick('gigLocationGroup',this)">The Dulpex</button>
+      <button class="opt-btn" data-val="Top Secret"       onclick="pick('gigLocationGroup',this)">Top Secret</button>
+      <button class="opt-btn" data-val="Comedy Cellar"    onclick="pick('gigLocationGroup',this)">Comedy Cellar</button>
+      <button class="opt-btn" data-val="Home"             onclick="pick('gigLocationGroup',this)">Home</button>
+      <button class="opt-btn" data-val="Other"            onclick="pick('gigLocationGroup',this)">✏️ Other</button>
+    </div>
+    <div id="gigCustomLocationWrap">
+      <input type="text" id="gigCustomLocation" placeholder="Type location…">
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <div class="field">
+    <div class="field-label">Amount Paid</div>
+    <input type="number" id="amountPaid" placeholder="0.00" min="0" step="0.01">
+  </div>
+
+  <div class="field">
+    <div class="field-label">Additional Pay <span class="optional">(optional)</span></div>
+    <input type="number" id="additionalPay" placeholder="0.00" min="0" step="0.01">
+  </div>
+
+  <hr class="section-divider">
+
+  <div class="field">
+    <div class="field-label">Payment Type</div>
+    <div class="btn-group" id="paymentTypeGroup">
+      <button class="opt-btn" data-val="Cash"  onclick="pick('paymentTypeGroup',this)">Cash</button>
+      <button class="opt-btn" data-val="Venmo" onclick="pick('paymentTypeGroup',this)">Venmo</button>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <div class="field">
+    <div class="field-label">Gig Contact <span class="optional">(optional)</span></div>
+    <input type="text" id="gigContact" placeholder="Name or @handle" autocomplete="off">
+  </div>
+
+  <hr class="section-divider">
+
+  <div class="field">
+    <div class="field-label">Expenses <span class="optional">(optional)</span></div>
+    <div id="expenseRows"></div>
+    <button class="add-expense-btn" onclick="addExpenseRow()">+ Add Expense</button>
+  </div>
+
+  <button class="submit-btn" id="submitPaidGig" onclick="submitPaidGig()">Add to Notion →</button>
+</div>
+
 <div id="toast"></div>
 
 <script>
   function showDashboard() {
-    ['dashView','showNoteView','contactView'].forEach(id => document.getElementById(id).classList.remove('active'));
+    ['dashView','showNoteView','contactView','paidGigView'].forEach(id => document.getElementById(id).classList.remove('active'));
     document.getElementById('dashView').classList.add('active');
     document.getElementById('backBtn').style.display = 'none';
     document.getElementById('headerTitle').textContent = 'Show Notes';
@@ -427,6 +527,9 @@
     if (which === 'showNote') {
       document.getElementById('showNoteView').classList.add('active');
       document.getElementById('headerTitle').textContent = 'New Show Note';
+    } else if (which === 'paidGig') {
+      document.getElementById('paidGigView').classList.add('active');
+      document.getElementById('headerTitle').textContent = 'Paid Gig';
     } else {
       document.getElementById('contactView').classList.add('active');
       document.getElementById('headerTitle').textContent = 'New Contact';
@@ -443,6 +546,15 @@
       } else {
         wrap.style.display = 'none';
         document.getElementById('customLocation').value = '';
+      }
+    }
+    if (groupId === 'gigLocationGroup') {
+      const wrap = document.getElementById('gigCustomLocationWrap');
+      if (btn.dataset.val === 'Other') {
+        wrap.style.display = 'block';
+      } else {
+        wrap.style.display = 'none';
+        document.getElementById('gigCustomLocation').value = '';
       }
     }
     updateNamePreview();
@@ -549,6 +661,79 @@
   function resetContact() {
     ['comicName','instagram','email','anotherInfo'].forEach(id => document.getElementById(id).value = '');
     document.querySelectorAll('#contactView .chip, #contactView .toggle-btn').forEach(b => b.classList.remove('selected','on'));
+  }
+
+  let expenseRowCount = 0;
+  const EXPENSE_TYPES = ['Gas','Meals','Lodging','Subway Fair','Flights','Other Expenses'];
+
+  function addExpenseRow() {
+    const n = expenseRowCount++;
+    const groupId = `expType${n}`;
+    const typeBtns = EXPENSE_TYPES.map(t =>
+      `<button class="opt-btn" data-val="${t}" onclick="pick('${groupId}',this)">${t}</button>`
+    ).join('');
+    const row = document.createElement('div');
+    row.className = 'expense-row';
+    row.id = `expRow${n}`;
+    row.innerHTML = `
+      <div class="btn-group" id="${groupId}" style="flex-wrap:wrap;">${typeBtns}</div>
+      <div class="expense-amount-row">
+        <input type="number" id="expAmount${n}" placeholder="0.00" min="0" step="0.01">
+        <button class="remove-expense-btn" onclick="document.getElementById('expRow${n}').remove()">✕</button>
+      </div>`;
+    document.getElementById('expenseRows').appendChild(row);
+  }
+
+  async function submitPaidGig() {
+    const locSel  = getSelected('gigLocationGroup');
+    const location = locSel === 'Other' ? document.getElementById('gigCustomLocation').value.trim() : locSel;
+    const typeOfSpot = getSelected('gigTypeGroup');
+    const paymentType = getSelected('paymentTypeGroup');
+    if (!typeOfSpot) { toast('Pick a type', 'error'); return; }
+    if (!location)   { toast('Pick a location', 'error'); return; }
+
+    // Collect expenses
+    const expenses = [];
+    document.querySelectorAll('#expenseRows .expense-row').forEach(row => {
+      const n = row.id.replace('expRow','');
+      const type = getSelected(`expType${n}`);
+      const amount = parseFloat(document.getElementById(`expAmount${n}`).value);
+      if (type && amount > 0) expenses.push({ type, amount });
+    });
+
+    const btn = document.getElementById('submitPaidGig');
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    try {
+      const res = await fetch('/api/paid-gig', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gigName:      document.getElementById('gigName').value.trim(),
+          typeOfSpot,
+          location,
+          amountPaid:   parseFloat(document.getElementById('amountPaid').value) || 0,
+          additionalPay: parseFloat(document.getElementById('additionalPay').value) || 0,
+          gigContact:   document.getElementById('gigContact').value.trim(),
+          paymentType,
+          expenses,
+        })
+      });
+      const data = await res.json();
+      if (data.success) { toast('✅ Gig saved!'); resetPaidGig(); setTimeout(showDashboard, 1000); }
+      else toast(`Error: ${data.error}`, 'error');
+    } catch { toast('Connection error', 'error'); }
+
+    btn.disabled = false; btn.textContent = 'Add to Notion →';
+  }
+
+  function resetPaidGig() {
+    ['gigName','amountPaid','additionalPay','gigContact'].forEach(id => document.getElementById(id).value = '');
+    document.querySelectorAll('#paidGigView .opt-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('expenseRows').innerHTML = '';
+    document.getElementById('gigCustomLocationWrap').style.display = 'none';
+    document.getElementById('gigCustomLocation').value = '';
+    expenseRowCount = 0;
   }
 </script>
 </body>
