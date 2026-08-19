@@ -376,7 +376,7 @@
     <div id="paidDetailsWrap" style="display:none; margin-top:12px;">
       <div class="field" style="margin-bottom:12px;">
         <div class="field-label">Amount Paid</div>
-        <input type="number" id="snAmountPaid" placeholder="0.00" min="0" step="0.01">
+        <input type="number" inputmode="decimal" id="snAmountPaid" placeholder="0.00" min="0" step="0.01">
       </div>
       <div class="field" style="margin-bottom:12px;">
         <div class="field-label">Payment Type</div>
@@ -512,12 +512,12 @@
 
   <div class="field">
     <div class="field-label">Amount Paid</div>
-    <input type="number" id="amountPaid" placeholder="0.00" min="0" step="0.01">
+    <input type="number" inputmode="decimal" id="amountPaid" placeholder="0.00" min="0" step="0.01">
   </div>
 
   <div class="field">
     <div class="field-label">Additional Pay <span class="optional">(optional)</span></div>
-    <input type="number" id="additionalPay" placeholder="0.00" min="0" step="0.01">
+    <input type="number" inputmode="decimal" id="additionalPay" placeholder="0.00" min="0" step="0.01">
   </div>
 
   <hr class="section-divider">
@@ -754,7 +754,7 @@
     row.innerHTML = `
       <div class="btn-group" id="${groupId}" style="flex-wrap:wrap;">${typeBtns}</div>
       <div class="expense-amount-row">
-        <input type="number" id="snExpAmount${n}" placeholder="0.00" min="0" step="0.01">
+        <input type="number" inputmode="decimal" id="snExpAmount${n}" placeholder="0.00" min="0" step="0.01">
         <button class="remove-expense-btn" onclick="document.getElementById('snExpRow${n}').remove()">✕</button>
       </div>`;
     document.getElementById('snExpenseRows').appendChild(row);
@@ -772,7 +772,7 @@
     row.innerHTML = `
       <div class="btn-group" id="${groupId}" style="flex-wrap:wrap;">${typeBtns}</div>
       <div class="expense-amount-row">
-        <input type="number" id="expAmount${n}" placeholder="0.00" min="0" step="0.01">
+        <input type="number" inputmode="decimal" id="expAmount${n}" placeholder="0.00" min="0" step="0.01">
         <button class="remove-expense-btn" onclick="document.getElementById('expRow${n}').remove()">✕</button>
       </div>`;
     document.getElementById('expenseRows').appendChild(row);
