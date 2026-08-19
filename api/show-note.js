@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   try {
-    const { type, location, videoRecorded, audioRecorded, crowdwork, howItWent, quickNote, paid, amountPaid, paymentType, expenses } = req.body;
+    const { type, location, videoRecorded, audioRecorded, crowdwork, howItWent, quickNote, paid, paymentReceived, amountPaid, paymentType, expenses } = req.body;
     const name = `${type} - ${location}`;
     const properties = {
       'Name': { title: [{ text: { content: name } }] },
@@ -33,6 +33,7 @@ module.exports = async (req, res) => {
         'Amount paid':  { number: parseFloat(amountPaid) || 0 },
         'Gig Date':     { date: { start: today } },
       };
+      incomeProps['Paid?'] = { checkbox: !!paymentReceived };
       if (paymentType) incomeProps['Payment Type'] = { select: { name: paymentType } };
       const incomePage = await createPage(process.env.INCOME_DB_ID, incomeProps);
 
