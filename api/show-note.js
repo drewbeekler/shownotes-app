@@ -1,41 +1,39 @@
 const { createPage } = require('./_notion');
 
 module.exports = async (req, res) => {
-  if (req.method !== 'POST') return res.status(405).end();
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const {
-      type, time, location,
-      videoRecorded, audioRecorded, crowdwork,
-      howItWent, quickNote,
-    } = req.body;
+    const { type, location, videoRecorded, audioRecorded, crowdwork, howItWent, quickNote, time } = req.body;
 
-    // Auto-build name: "[time] TYPE - Location"
-    const parts = [];
-    if (time && time.trim()) parts.push(time.trim());
-    parts.push(type);
-    parts.push('-');
-    parts.push(location);
-    const name = parts.join(' ');
+    const now = new Date();
+    const hours = now.getHours();
+    const displayHour = hours % 12 || 12;
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    const timeStr = time || `${displayHour}${ampm}`;
+    const name = `${timeStr} ${type} - ${location}`;
 
     const properties = {
-      'Name':            { title: [{ text: { content: name } }] },
-      'TYPE':            { select: { name: type } },
+      'Name': { title: [{ text: { content: name } }] },
+      'TYPE': { select: { name: type } },
       'Video Recorded?': { checkbox: !!videoRecorded },
-      'Audio Recorded':  { checkbox: !!audioRecorded },
-      'Crowdwork':       { checkbox: !!crowdwork },
-      "How'd it go?":   { select: { name: howItWent } },
-      'Location':        { select: { name: location } },
+      'Audio Recorded': { checkbox: !!audioRecorded },
+      'Crowdwork': { checkbox: !!crowdwork },
+      "How'd it go?": { status: { name: howItWent } },
+      'Location': { multi_select: [{ name: location }] }
     };
 
-    if (quickNote && quickNote.trim()) {
-      properties['Quick Note'] = { rich_text: [{ text: { content: quickNote.trim() } }] };
+    if (quickNote) {
+      properties['Quick Note'] = { rich_text: [{ text: { content: quickNote } }] };
     }
 
     const page = await createPage(process.env.SHOW_NOTES_DB_ID, properties);
-    res.json({ success: true, id: page.id, name });
+    res.status(200).json({ success: true, id: page.id });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
