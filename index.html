@@ -120,10 +120,16 @@
 
   .opt-btn[data-val="SPOT"].selected   { border-color: #e05c5c; background: rgba(224,92,92,0.12); color: #f08080; }
   .opt-btn[data-val="HOST"].selected   { border-color: #5c9de0; background: rgba(92,157,224,0.12); color: #80b4f0; }
-  .opt-btn[data-val="Greenwich"].selected    { border-color: #e09a5c; background: rgba(224,154,92,0.12); color: #f0b880; }
-  .opt-btn[data-val="Big wave"].selected     { border-color: #5c9de0; background: rgba(92,157,224,0.12); color: #80b4f0; }
-  .opt-btn[data-val="Broadway"].selected     { border-color: #5c9de0; background: rgba(92,157,224,0.12); color: #80b4f0; }
+  .opt-btn[data-val="Broadway"].selected      { border-color: #5c9de0; background: rgba(92,157,224,0.12); color: #80b4f0; }
+  .opt-btn[data-val="NYCC - UWS"].selected    { border-color: #9b7de0; background: rgba(155,125,224,0.12); color: #b89ff0; }
+  .opt-btn[data-val="Greenwich"].selected     { border-color: #e09a5c; background: rgba(224,154,92,0.12); color: #f0b880; }
+  .opt-btn[data-val="NYCC - 24th"].selected   { border-color: #9b7de0; background: rgba(155,125,224,0.12); color: #b89ff0; }
   .opt-btn[data-val="NYCC - East 4th"].selected { border-color: #9b7de0; background: rgba(155,125,224,0.12); color: #b89ff0; }
+  .opt-btn[data-val="Comedy Cellar"].selected { border-color: #e05c5c; background: rgba(224,92,92,0.12); color: #f08080; }
+  .opt-btn[data-val="Top Secret"].selected    { border-color: #666; background: rgba(120,120,120,0.12); color: #aaa; }
+  .opt-btn[data-val="The Dulpex"].selected    { border-color: #e09a5c; background: rgba(224,154,92,0.12); color: #f0b880; }
+  .opt-btn[data-val="Hell yeah"].selected     { border-color: #27ae60; background: rgba(39,174,96,0.12); color: #5dce88; }
+  .opt-btn[data-val="Big Wave"].selected      { border-color: #5c9de0; background: rgba(92,157,224,0.12); color: #80b4f0; }
   .opt-btn[data-val="Exellent!"].selected      { border-color: #f7c948; background: rgba(247,201,72,0.12); color: #f7d970; }
   .opt-btn[data-val="Better than Ok"].selected { border-color: #9b59b6; background: rgba(155,89,182,0.15); color: #c090e0; }
   .opt-btn[data-val="OK"].selected             { border-color: #27ae60; background: rgba(39,174,96,0.12); color: #5dce88; }
@@ -293,10 +299,16 @@
   <div class="field">
     <div class="field-label">Location</div>
     <div class="btn-group" id="locationGroup">
-      <button class="opt-btn" data-val="Greenwich"      onclick="pick('locationGroup',this)">Greenwich</button>
-      <button class="opt-btn" data-val="Big wave"       onclick="pick('locationGroup',this)">Big Wave</button>
-      <button class="opt-btn" data-val="Broadway"       onclick="pick('locationGroup',this)">Broadway</button>
-      <button class="opt-btn" data-val="NYCC - East 4th" onclick="pick('locationGroup',this)">NYCC</button>
+      <button class="opt-btn" data-val="Broadway"        onclick="pick('locationGroup',this)">Broadway</button>
+      <button class="opt-btn" data-val="NYCC - UWS"     onclick="pick('locationGroup',this)">NYCC - UWS</button>
+      <button class="opt-btn" data-val="Greenwich"       onclick="pick('locationGroup',this)">Greenwich</button>
+      <button class="opt-btn" data-val="NYCC - 24th"    onclick="pick('locationGroup',this)">NYCC - 24th</button>
+      <button class="opt-btn" data-val="NYCC - East 4th" onclick="pick('locationGroup',this)">NYCC - East 4th</button>
+      <button class="opt-btn" data-val="Comedy Cellar"  onclick="pick('locationGroup',this)">Comedy Cellar</button>
+      <button class="opt-btn" data-val="Top Secret"     onclick="pick('locationGroup',this)">Top Secret</button>
+      <button class="opt-btn" data-val="The Dulpex"     onclick="pick('locationGroup',this)">The Dulpex</button>
+      <button class="opt-btn" data-val="Hell yeah"      onclick="pick('locationGroup',this)">Hell yeah</button>
+      <button class="opt-btn" data-val="Big Wave"       onclick="pick('locationGroup',this)">Big Wave</button>
       <button class="opt-btn" data-val="Other"          onclick="pick('locationGroup',this)">✏️ Other</button>
     </div>
     <div id="customLocationWrap">
