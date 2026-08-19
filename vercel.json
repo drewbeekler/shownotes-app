@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/api/show-note", "dest": "/api/show-note.js" },
+    { "src": "/api/contact", "dest": "/api/contact.js" },
+    { "src": "/public/(.*)", "dest": "/public/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
