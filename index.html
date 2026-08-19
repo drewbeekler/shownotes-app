@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Show Notes</title>
+
+<!-- PWA -->
+<link rel="manifest" href="/public/manifest.json">
+<meta name="theme-color" content="#111111">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Show Notes">
+<link rel="apple-touch-icon" href="/public/icon-192.png">
+
+<style>
+  :root {
+    --bg: #111111;
+    --surface: #1c1c1c;
+    --surface2: #252525;
+    --border: #333;
+    --text: #f0f0f0;
+    --text-dim: #888;
+    --accent: #4f8ef7;
+    --green: #2ea84e;
+    --radius: 14px;
+    --radius-sm: 10px;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: calc(16px + var(--safe-bottom));
+    overscroll-behavior: none;
+  }
+
+  /* ── Header ── */
+  header {
+    width: 100%;
+    max-width: 560px;
+    padding: 16px 20px;
+    padding-top: max(16px, env(safe-area-inset-top));
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { font-size: 18px; font-weight: 700; }
+  .back-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 14px;
+    display: none;
+  }
+
+  /* ── Views ── */
+  .view { display: none; width: 100%; max-width: 560px; padding: 20px 16px; }
+  .view.active { display: block; }
+
+  /* ── Dashboard ── */
+  .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
+  .dash-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px 16px;
+    cursor: pointer;
+    text-align: center;
+    color: var(--text);
+    transition: background 0.12s;
+    -webkit-user-select: none;
+  }
+  .dash-btn:active { background: var(--surface2); }
+  .dash-btn .icon { font-size: 36px; margin-bottom: 12px; }
+  .dash-btn .label { font-size: 16px; font-weight: 700; }
+  .dash-btn .sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+  /* ── Field ── */
+  .field { margin-bottom: 20px; }
+  .field-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+  }
+  .optional { color: #444; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 11px; }
+
+  /* ── Big option buttons ── */
+  .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .opt-btn {
+    flex: 1;
+    min-width: 70px;
+    padding: 15px 10px;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    -webkit-user-select: none;
+  }
+  .opt-btn:active { opacity: 0.7; }
+  .opt-btn.selected { border-color: var(--accent); background: rgba(79,142,247,0.12); color: #7ab3fa; }
+
+  .opt-btn[data-val="SPOT"].selected   { border-color: #e05c5c; background: rgba(224,92,92,0.12); color: #f08080; }
+  .opt-btn[data-val="HOST"].selected   { border-color: #5c9de0; background: rgba(92,157,224,0.12); color: #80b4f0; }
+  .opt-btn[data-val="Greenwich"].selected    { border-color: #e09a5c; background: rgba(224,154,92,0.12); color: #f0b880; }
+  .opt-btn[data-val="Big wave"].selected     { border-color: #5c9de0; background: rgba(92,157,224,0.12); color: #80b4f0; }
+  .opt-btn[data-val="Broadway"].selected     { border-color: #5c9de0; background: rgba(92,157,224,0.12); color: #80b4f0; }
+  .opt-btn[data-val="NYCC - East 4th"].selected { border-color: #9b7de0; background: rgba(155,125,224,0.12); color: #b89ff0; }
+  .opt-btn[data-val="Better than Ok"].selected { border-color: #9b59b6; background: rgba(155,89,182,0.15); color: #c090e0; }
+  .opt-btn[data-val="OK"].selected             { border-color: #27ae60; background: rgba(39,174,96,0.12); color: #5dce88; }
+  .opt-btn[data-val="Bombed"].selected         { border-color: #666; background: rgba(120,120,120,0.12); color: #aaa; }
+
+  /* ── Toggles ── */
+  .toggle-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .toggle-btn {
+    flex: 1;
+    min-width: 90px;
+    padding: 13px 8px;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    -webkit-user-select: none;
+  }
+  .toggle-btn .t-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+  .toggle-btn.on { border-color: var(--green); background: rgba(46,168,78,0.12); color: #5dce88; }
+
+  /* ── Inputs ── */
+  input[type="text"], input[type="email"], textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 16px; /* 16px prevents iOS zoom */
+    padding: 13px 14px;
+    outline: none;
+    font-family: inherit;
+    -webkit-appearance: none;
+    resize: none;
+  }
+  input:focus, textarea:focus { border-color: var(--accent); }
+  input::placeholder, textarea::placeholder { color: #555; }
+
+  /* ── Chips (multi-select) ── */
+  .chip-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-user-select: none;
+  }
+  .chip:active { opacity: 0.7; }
+  .chip.selected { border-color: var(--accent); background: rgba(79,142,247,0.12); color: #7ab3fa; }
+
+  /* ── Name preview ── */
+  .name-preview {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 11px 14px;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+  }
+  .name-preview span { color: var(--text); font-weight: 600; }
+
+  /* ── Submit ── */
+  .submit-btn {
+    width: 100%;
+    padding: 18px;
+    border-radius: var(--radius);
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-user-select: none;
+    margin-top: 4px;
+  }
+  .submit-btn:active { opacity: 0.8; }
+  .submit-btn:disabled { opacity: 0.4; }
+
+  /* ── Instagram prefix ── */
+  .input-prefix {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .input-prefix:focus-within { border-color: var(--accent); }
+  .input-prefix .prefix {
+    padding: 13px 10px 13px 14px;
+    color: var(--text-dim);
+    font-size: 16px;
+    background: var(--surface2);
+    border-right: 1px solid var(--border);
+  }
+  .input-prefix input { border: none; border-radius: 0; background: transparent; }
+  .input-prefix input:focus { border-color: transparent; }
+
+  /* ── Toast ── */
+  #toast {
+    position: fixed;
+    bottom: calc(24px + var(--safe-bottom));
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1c1c1c;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 13px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+    z-index: 999;
+    white-space: nowrap;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.success { border-color: var(--green); color: #5dce88; }
+  #toast.error   { border-color: #c0392b; color: #e07070; }
+
+  .section-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<header>
+  <button class="back-btn" id="backBtn" onclick="showDashboard()">← Back</button>
+  <h1 id="headerTitle">Show Notes</h1>
+</header>
+
+<!-- DASHBOARD -->
+<div class="view active" id="dashView">
+  <div class="dashboard-grid">
+    <button class="dash-btn" onclick="showForm('showNote')">
+      <div class="icon">📝</div>
+      <div class="label">New Show Note</div>
+      <div class="sub">Log a set</div>
+    </button>
+    <button class="dash-btn" onclick="showForm('contact')">
+      <div class="icon">👤</div>
+      <div class="label">New Contact</div>
+      <div class="sub">Add a comic</div>
+    </button>
+  </div>
+</div>
+
+<!-- SHOW NOTE FORM -->
+<div class="view" id="showNoteView">
+  <div class="section-title">New Show Note</div>
+
+  <div class="field">
+    <div class="field-label">Type</div>
+    <div class="btn-group" id="typeGroup">
+      <button class="opt-btn" data-val="SPOT" onclick="pick('typeGroup',this)">🎤 SPOT</button>
+      <button class="opt-btn" data-val="HOST" onclick="pick('typeGroup',this)">🎙️ HOST</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">Time <span class="optional">(optional)</span></div>
+    <input type="text" id="timeInput" placeholder="e.g. 9pm, 11pm…" oninput="updateNamePreview()">
+  </div>
+
+  <div class="field">
+    <div class="field-label">Location</div>
+    <div class="btn-group" id="locationGroup">
+      <button class="opt-btn" data-val="Greenwich"      onclick="pick('locationGroup',this)">Greenwich</button>
+      <button class="opt-btn" data-val="Big wave"       onclick="pick('locationGroup',this)">Big Wave</button>
+      <button class="opt-btn" data-val="Broadway"       onclick="pick('locationGroup',this)">Broadway</button>
+      <button class="opt-btn" data-val="NYCC - East 4th" onclick="pick('locationGroup',this)">NYCC</button>
+    </div>
+  </div>
+
+  <div class="name-preview">Name: <span id="namePreviewText">—</span></div>
+
+  <div class="field">
+    <div class="field-label">Recorded / Crowdwork</div>
+    <div class="toggle-group">
+      <button class="toggle-btn" id="togVideo" onclick="toggle(this)"><span class="t-icon">🎥</span>Video</button>
+      <button class="toggle-btn" id="togAudio" onclick="toggle(this)"><span class="t-icon">🎙️</span>Audio</button>
+      <button class="toggle-btn" id="togCrowd" onclick="toggle(this)"><span class="t-icon">🎭</span>Crowdwork</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">How'd it go?</div>
+    <div class="btn-group" id="howGroup">
+      <button class="opt-btn" data-val="Better than Ok" onclick="pick('howGroup',this)">⭐ Better than OK</button>
+      <button class="opt-btn" data-val="OK"             onclick="pick('howGroup',this)">👍 OK</button>
+      <button class="opt-btn" data-val="Bombed"         onclick="pick('howGroup',this)">💣 Bombed</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">Quick Note <span class="optional">(optional)</span></div>
+    <textarea id="quickNote" rows="3" placeholder="What happened, bits that worked…"></textarea>
+  </div>
+
+  <button class="submit-btn" id="submitShowNote" onclick="submitShowNote()">Add to Notion →</button>
+</div>
+
+<!-- CONTACT FORM -->
+<div class="view" id="contactView">
+  <div class="section-title">New Contact</div>
+
+  <div class="field">
+    <div class="field-label">Name</div>
+    <input type="text" id="comicName" placeholder="Full name" autocomplete="off">
+  </div>
+
+  <div class="field">
+    <div class="field-label">Instagram</div>
+    <div class="input-prefix">
+      <span class="prefix">@</span>
+      <input type="text" id="instagram" placeholder="handle" autocomplete="off" autocorrect="off" autocapitalize="none">
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">Email <span class="optional">(optional)</span></div>
+    <input type="email" id="email" placeholder="email@example.com" autocomplete="off">
+  </div>
+
+  <div class="field">
+    <div class="field-label">Location(s)</div>
+    <div class="chip-group" id="locationChips">
+      <button class="chip" data-val="Barcelona" onclick="toggleChip(this)">Barcelona</button>
+      <button class="chip" data-val="London"    onclick="toggleChip(this)">London</button>
+      <button class="chip" data-val="France"    onclick="toggleChip(this)">France</button>
+      <button class="chip" data-val="New York"  onclick="toggleChip(this)">New York</button>
+      <button class="chip" data-val="LA"        onclick="toggleChip(this)">LA</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">Type</div>
+    <div class="chip-group" id="typeChips">
+      <button class="chip" data-val="Comic"    onclick="toggleChip(this)">🎤 Comic</button>
+      <button class="chip" data-val="Booker"   onclick="toggleChip(this)">📋 Booker</button>
+      <button class="chip" data-val="Producer" onclick="toggleChip(this)">🎬 Producer</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">Book on Big Wave?</div>
+    <div class="toggle-group">
+      <button class="toggle-btn" id="togBook" onclick="toggle(this)" style="max-width:200px">
+        <span class="t-icon">🌊</span>Book on Big Wave
+      </button>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">Notes <span class="optional">(optional)</span></div>
+    <textarea id="anotherInfo" rows="3" placeholder="How you met, context, follow-up…"></textarea>
+  </div>
+
+  <button class="submit-btn" id="submitContact" onclick="submitContact()">Add to Notion →</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  function showDashboard() {
+    ['dashView','showNoteView','contactView'].forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById('dashView').classList.add('active');
+    document.getElementById('backBtn').style.display = 'none';
+    document.getElementById('headerTitle').textContent = 'Show Notes';
+  }
+
+  function showForm(which) {
+    document.getElementById('dashView').classList.remove('active');
+    document.getElementById('backBtn').style.display = 'block';
+    if (which === 'showNote') {
+      document.getElementById('showNoteView').classList.add('active');
+      document.getElementById('headerTitle').textContent = 'New Show Note';
+    } else {
+      document.getElementById('contactView').classList.add('active');
+      document.getElementById('headerTitle').textContent = 'New Contact';
+    }
+  }
+
+  function pick(groupId, btn) {
+    document.querySelectorAll(`#${groupId} .opt-btn`).forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    updateNamePreview();
+  }
+
+  function toggle(btn) { btn.classList.toggle('on'); }
+  function toggleChip(chip) { chip.classList.toggle('selected'); }
+
+  function getSelected(groupId) {
+    const el = document.querySelector(`#${groupId} .opt-btn.selected`);
+    return el ? el.dataset.val : null;
+  }
+
+  function getSelectedChips(groupId) {
+    return [...document.querySelectorAll(`#${groupId} .chip.selected`)].map(c => c.dataset.val);
+  }
+
+  function updateNamePreview() {
+    const type = getSelected('typeGroup');
+    const loc  = getSelected('locationGroup');
+    const time = document.getElementById('timeInput').value.trim();
+    const parts = [];
+    if (time) parts.push(time);
+    if (type) parts.push(type);
+    if (type || loc) parts.push('-');
+    if (loc) parts.push(loc);
+    document.getElementById('namePreviewText').textContent = parts.length > 1 ? parts.join(' ') : '—';
+  }
+
+  function toast(msg, type = 'success') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = `show ${type}`;
+    setTimeout(() => el.classList.remove('show'), 3000);
+  }
+
+  async function submitShowNote() {
+    const type      = getSelected('typeGroup');
+    const location  = getSelected('locationGroup');
+    const howItWent = getSelected('howGroup');
+    if (!type)      { toast('Pick a type', 'error'); return; }
+    if (!location)  { toast('Pick a location', 'error'); return; }
+    if (!howItWent) { toast("Pick how it went", 'error'); return; }
+
+    const btn = document.getElementById('submitShowNote');
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    try {
+      const res = await fetch('/api/show-note', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type, location, howItWent,
+          time:          document.getElementById('timeInput').value.trim(),
+          videoRecorded: document.getElementById('togVideo').classList.contains('on'),
+          audioRecorded: document.getElementById('togAudio').classList.contains('on'),
+          crowdwork:     document.getElementById('togCrowd').classList.contains('on'),
+          quickNote:     document.getElementById('quickNote').value.trim(),
+        })
+      });
+      const data = await res.json();
+      if (data.success) { toast(`✅ "${data.name}" saved!`); resetShowNote(); }
+      else toast(`Error: ${data.error}`, 'error');
+    } catch { toast('Connection error', 'error'); }
+
+    btn.disabled = false; btn.textContent = 'Add to Notion →';
+  }
+
+  function resetShowNote() {
+    document.querySelectorAll('#showNoteView .opt-btn, #showNoteView .toggle-btn').forEach(b => b.classList.remove('selected','on'));
+    document.getElementById('timeInput').value = '';
+    document.getElementById('quickNote').value = '';
+    document.getElementById('namePreviewText').textContent = '—';
+  }
+
+  async function submitContact() {
+    const comicName = document.getElementById('comicName').value.trim();
+    if (!comicName) { toast('Enter a name', 'error'); return; }
+
+    const btn = document.getElementById('submitContact');
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          comicName,
+          instagram:     document.getElementById('instagram').value.trim(),
+          email:         document.getElementById('email').value.trim(),
+          locations:     getSelectedChips('locationChips'),
+          typeOfContact: getSelectedChips('typeChips'),
+          bookOnBigWave: document.getElementById('togBook').classList.contains('on'),
+          anotherInfo:   document.getElementById('anotherInfo').value.trim(),
+        })
+      });
+      const data = await res.json();
+      if (data.success) { toast(`✅ ${comicName} added!`); resetContact(); }
+      else toast(`Error: ${data.error}`, 'error');
+    } catch { toast('Connection error', 'error'); }
+
+    btn.disabled = false; btn.textContent = 'Add to Notion →';
+  }
+
+  function resetContact() {
+    ['comicName','instagram','email','anotherInfo'].forEach(id => document.getElementById(id).value = '');
+    document.querySelectorAll('#contactView .chip, #contactView .toggle-btn').forEach(b => b.classList.remove('selected','on'));
+  }
+</script>
+</body>
+</html>
