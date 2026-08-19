@@ -585,6 +585,16 @@
         document.getElementById('gigCustomLocation').value = '';
       }
     }
+    if (groupId.startsWith('snExpType') && btn.dataset.val === 'Subway Fair') {
+      const n = groupId.replace('snExpType', '');
+      const amt = document.getElementById(`snExpAmount${n}`);
+      if (amt && !amt.value) amt.value = '6';
+    }
+    if (groupId.startsWith('expType') && btn.dataset.val === 'Subway Fair') {
+      const n = groupId.replace('expType', '');
+      const amt = document.getElementById(`expAmount${n}`);
+      if (amt && !amt.value) amt.value = '6';
+    }
     if (groupId === 'gigTypeGroup' && btn.dataset.val === 'Editing') {
       document.querySelectorAll('#gigLocationGroup .opt-btn').forEach(b => b.classList.remove('selected'));
       const homeBtn = document.querySelector('#gigLocationGroup .opt-btn[data-val="Home"]');
