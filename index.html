@@ -182,6 +182,9 @@
     resize: none;
   }
   input:focus, textarea:focus { border-color: var(--accent); }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type="number"] { -moz-appearance: textfield; }
   input::placeholder, textarea::placeholder { color: #555; }
 
   /* ── Chips (multi-select) ── */
