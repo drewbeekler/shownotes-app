@@ -291,11 +291,6 @@
   </div>
 
   <div class="field">
-    <div class="field-label">Time <span class="optional">(optional)</span></div>
-    <input type="text" id="timeInput" placeholder="e.g. 9pm, 11pm…" oninput="updateNamePreview()">
-  </div>
-
-  <div class="field">
     <div class="field-label">Location</div>
     <div class="btn-group" id="locationGroup">
       <button class="opt-btn" data-val="Greenwich"      onclick="pick('locationGroup',this)">Greenwich</button>
@@ -450,9 +445,7 @@
     const type = getSelected('typeGroup');
     const locSel = getSelected('locationGroup');
     const loc = locSel === 'Other' ? document.getElementById('customLocation').value.trim() : locSel;
-    const time = document.getElementById('timeInput').value.trim();
     const parts = [];
-    if (time) parts.push(time);
     if (type) parts.push(type);
     if (type || loc) parts.push('-');
     if (loc) parts.push(loc);
@@ -484,7 +477,6 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type, location, howItWent,
-          time:          document.getElementById('timeInput').value.trim(),
           videoRecorded: document.getElementById('togVideo').classList.contains('on'),
           audioRecorded: document.getElementById('togAudio').classList.contains('on'),
           crowdwork:     document.getElementById('togCrowd').classList.contains('on'),
@@ -501,7 +493,6 @@
 
   function resetShowNote() {
     document.querySelectorAll('#showNoteView .opt-btn, #showNoteView .toggle-btn').forEach(b => b.classList.remove('selected','on'));
-    document.getElementById('timeInput').value = '';
     document.getElementById('quickNote').value = '';
     document.getElementById('customLocation').value = '';
     document.getElementById('customLocationWrap').style.display = 'none';

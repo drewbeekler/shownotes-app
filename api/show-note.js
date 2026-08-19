@@ -7,13 +7,8 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   try {
-    const { type, location, videoRecorded, audioRecorded, crowdwork, howItWent, quickNote, time } = req.body;
-    const now = new Date();
-    const hours = now.getHours();
-    const displayHour = hours % 12 || 12;
-    const ampm = hours >= 12 ? 'pm' : 'am';
-    const timeStr = time || `${displayHour}${ampm}`;
-    const name = `${timeStr} ${type} - ${location}`;
+    const { type, location, videoRecorded, audioRecorded, crowdwork, howItWent, quickNote } = req.body;
+    const name = `${type} - ${location}`;
     const properties = {
       'Name': { title: [{ text: { content: name } }] },
       'TYPE': { select: { name: type } },
