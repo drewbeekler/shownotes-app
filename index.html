@@ -334,6 +334,13 @@
   <hr class="section-divider">
 
   <div class="field">
+    <div class="field-label">Show Name <span class="optional">(optional)</span></div>
+    <input type="text" id="showName" placeholder="Midnight Show, Naked Comedy…" autocomplete="off">
+  </div>
+
+  <hr class="section-divider">
+
+  <div class="field">
     <div class="field-label">Recorded / Crowdwork</div>
     <div class="toggle-group">
       <button class="toggle-btn" id="togVideo" onclick="toggle(this)"><span class="t-icon">🎥</span>Video</button>
@@ -665,6 +672,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type, location, howItWent,
+          showName: document.getElementById('showName').value.trim(),
           videoRecorded: document.getElementById('togVideo').classList.contains('on'),
           audioRecorded: document.getElementById('togAudio').classList.contains('on'),
           crowdwork:     document.getElementById('togCrowd').classList.contains('on'),
@@ -690,6 +698,7 @@
   function resetShowNote() {
     document.querySelectorAll('#showNoteView .opt-btn, #showNoteView .toggle-btn').forEach(b => b.classList.remove('selected','on'));
     document.getElementById('quickNote').value = '';
+    document.getElementById('showName').value = '';
     document.getElementById('customLocation').value = '';
     document.getElementById('customLocationWrap').style.display = 'none';
     document.getElementById('snAmountPaid').value = '';
