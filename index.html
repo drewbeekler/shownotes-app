@@ -270,6 +270,16 @@
   #toast.error   { border-color: #c0392b; color: #e07070; }
 
   .section-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+  .show-note-card {
+    width: 100%; background: var(--surface); border: 2px solid var(--border);
+    border-radius: var(--radius-sm); padding: 12px 14px; text-align: left;
+    color: var(--text); cursor: pointer; margin-bottom: 8px; display: block;
+    -webkit-user-select: none;
+  }
+  .show-note-card:active { opacity: 0.7; }
+  .show-note-card.selected { border-color: var(--accent); background: rgba(79,142,247,0.12); }
+  .snc-name { font-size: 14px; font-weight: 600; }
+  .snc-meta { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
 </style>
 </head>
 <body>
@@ -539,6 +549,18 @@
   <hr class="section-divider">
 
   <div class="field">
+    <div class="field-label">Link to Show Note <span class="optional">(optional)</span></div>
+    <div class="toggle-group">
+      <button class="toggle-btn" id="togShowNoteLink" onclick="toggleShowNoteLink(this)"><span class="t-icon">📝</span>Link Show Note</button>
+    </div>
+    <div id="showNoteLinkWrap" style="display:none; margin-top:12px;">
+      <div id="showNotesList"></div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <div class="field">
     <div class="field-label">Expenses <span class="optional">(optional)</span></div>
     <div id="expenseRows"></div>
     <button class="add-expense-btn" onclick="addExpenseRow()">+ Add Expense</button>
@@ -742,6 +764,46 @@
     document.querySelectorAll('#contactView .chip, #contactView .toggle-btn').forEach(b => b.classList.remove('selected','on'));
   }
 
+  let selectedShowNoteId = null;
+
+  function toggleShowNoteLink(btn) {
+    btn.classList.toggle('on');
+    const wrap = document.getElementById('showNoteLinkWrap');
+    if (btn.classList.contains('on')) {
+      wrap.style.display = 'block';
+      loadRecentShowNotes();
+    } else {
+      wrap.style.display = 'none';
+      selectedShowNoteId = null;
+    }
+  }
+
+  async function loadRecentShowNotes() {
+    const container = document.getElementById('showNotesList');
+    container.innerHTML = '<div style="color:var(--text-dim);font-size:14px;padding:8px 0;">Loading…</div>';
+    try {
+      const res = await fetch('/api/recent-show-notes');
+      const data = await res.json();
+      if (!data.notes) throw new Error(data.error);
+      container.innerHTML = '';
+      data.notes.forEach(note => {
+        const card = document.createElement('button');
+        card.className = 'show-note-card';
+        card.dataset.id = note.id;
+        const date = new Date(note.created).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        card.innerHTML = `<div class="snc-name">${note.name}</div><div class="snc-meta">${note.howItWent}${note.howItWent ? ' · ' : ''}${date}</div>`;
+        card.onclick = () => {
+          document.querySelectorAll('.show-note-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          selectedShowNoteId = note.id;
+        };
+        container.appendChild(card);
+      });
+    } catch(e) {
+      container.innerHTML = `<div style="color:#e07070;font-size:14px;padding:8px 0;">Error loading show notes</div>`;
+    }
+  }
+
   let expenseRowCount = 0;
   let snExpenseRowCount = 0;
   const EXPENSE_TYPES = ['Gas','Meals','Lodging','Subway Fair','Flights','Other Expenses'];
@@ -813,6 +875,7 @@
           amountPaid:   parseFloat(document.getElementById('amountPaid').value) || 0,
           additionalPay: parseFloat(document.getElementById('additionalPay').value) || 0,
           paymentReceived: document.getElementById('togPaymentReceived').classList.contains('on'),
+          linkedShowNoteId: selectedShowNoteId,
           paymentType,
           expenses,
         })
@@ -831,6 +894,9 @@
     document.getElementById('expenseRows').innerHTML = '';
     document.getElementById('gigCustomLocationWrap').style.display = 'none';
     document.getElementById('gigCustomLocation').value = '';
+    document.getElementById('showNoteLinkWrap').style.display = 'none';
+    document.getElementById('showNotesList').innerHTML = '';
+    selectedShowNoteId = null;
     expenseRowCount = 0;
   }
 </script>

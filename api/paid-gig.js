@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { gigName, typeOfSpot, location, amountPaid, additionalPay, gigContact, paymentType, paymentReceived, expenses } = req.body;
+    const { gigName, typeOfSpot, location, amountPaid, additionalPay, gigContact, paymentType, paymentReceived, linkedShowNoteId, expenses } = req.body;
 
     const today = new Date().toISOString().split('T')[0];
     const name = gigName ? `${typeOfSpot} - ${gigName}` : `${typeOfSpot} - ${location}`;
@@ -22,6 +22,7 @@ module.exports = async (req, res) => {
     };
 
     properties['Paid?'] = { checkbox: !!paymentReceived };
+    if (linkedShowNoteId) properties['Show Notes'] = { relation: [{ id: linkedShowNoteId }] };
     if (additionalPay) properties['Additional Pay'] = { number: parseFloat(additionalPay) || 0 };
     if (gigContact)    properties['Gig Contact']    = { rich_text: [{ text: { content: gigContact } }] };
     if (paymentType)   properties['Payment Type']   = { select: { name: paymentType } };
