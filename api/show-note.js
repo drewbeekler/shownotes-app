@@ -8,10 +8,11 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   try {
     const { type, location, showName, showTime, videoRecorded, audioRecorded, crowdwork, howItWent, quickNote, paid, paymentReceived, amountPaid, paymentType, expenses } = req.body;
-    const nameParts = [type];
+    const nameParts = [];
+    if (showTime) nameParts.push(showTime);
+    nameParts.push(type);
     if (showName) nameParts.push(showName);
     nameParts.push(location);
-    if (showTime) nameParts.push(showTime);
     const name = nameParts.join(' - ');
     const properties = {
       'Name': { title: [{ text: { content: name } }] },
