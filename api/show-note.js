@@ -7,8 +7,12 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   try {
-    const { type, location, showName, videoRecorded, audioRecorded, crowdwork, howItWent, quickNote, paid, paymentReceived, amountPaid, paymentType, expenses } = req.body;
-    const name = showName ? `${type} - ${showName} - ${location}` : `${type} - ${location}`;
+    const { type, location, showName, showTime, videoRecorded, audioRecorded, crowdwork, howItWent, quickNote, paid, paymentReceived, amountPaid, paymentType, expenses } = req.body;
+    const nameParts = [type];
+    if (showName) nameParts.push(showName);
+    nameParts.push(location);
+    if (showTime) nameParts.push(showTime);
+    const name = nameParts.join(' - ');
     const properties = {
       'Name': { title: [{ text: { content: name } }] },
       'TYPE': { select: { name: type } },

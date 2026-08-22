@@ -344,6 +344,13 @@
   <hr class="section-divider">
 
   <div class="field">
+    <div class="field-label">Show Time</div>
+    <input type="time" id="showTime">
+  </div>
+
+  <hr class="section-divider">
+
+  <div class="field">
     <div class="field-label">Show Name <span class="optional">(optional)</span></div>
     <input type="text" id="showName" placeholder="" autocomplete="off">
   </div>
@@ -586,12 +593,27 @@
     document.getElementById('headerTitle').textContent = 'Show Notes';
   }
 
+  function getCurrentHourTime() {
+    const now = new Date();
+    const h = now.getHours().toString().padStart(2, '0');
+    return `${h}:00`;
+  }
+
+  function formatTime12h(timeStr) {
+    if (!timeStr) return '';
+    const [h, m] = timeStr.split(':').map(Number);
+    const period = h >= 12 ? 'pm' : 'am';
+    const h12 = h % 12 || 12;
+    return m === 0 ? `${h12}${period}` : `${h12}:${m.toString().padStart(2,'0')}${period}`;
+  }
+
   function showForm(which) {
     document.getElementById('dashView').classList.remove('active');
     document.getElementById('backBtn').style.display = 'block';
     if (which === 'showNote') {
       document.getElementById('showNoteView').classList.add('active');
       document.getElementById('headerTitle').textContent = 'New Show Note';
+      document.getElementById('showTime').value = getCurrentHourTime();
     } else if (which === 'paidGig') {
       document.getElementById('paidGigView').classList.add('active');
       document.getElementById('headerTitle').textContent = 'Paid Gig';
@@ -694,6 +716,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type, location, howItWent,
+          showTime: formatTime12h(document.getElementById('showTime').value),
           showName: document.getElementById('showName').value.trim(),
           videoRecorded: document.getElementById('togVideo').classList.contains('on'),
           audioRecorded: document.getElementById('togAudio').classList.contains('on'),
@@ -721,6 +744,7 @@
     document.querySelectorAll('#showNoteView .opt-btn, #showNoteView .toggle-btn').forEach(b => b.classList.remove('selected','on'));
     document.getElementById('quickNote').value = '';
     document.getElementById('showName').value = '';
+    document.getElementById('showTime').value = getCurrentHourTime();
     document.getElementById('customLocation').value = '';
     document.getElementById('customLocationWrap').style.display = 'none';
     document.getElementById('snAmountPaid').value = '';
