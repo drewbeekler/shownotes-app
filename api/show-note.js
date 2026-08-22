@@ -39,6 +39,7 @@ module.exports = async (req, res) => {
         'Gig Date':     { date: { start: today } },
       };
       incomeProps['Paid?'] = { checkbox: !!paymentReceived };
+      incomeProps['Show Notes'] = { relation: [{ id: page.id }] };
       if (paymentType) incomeProps['Payment Type'] = { select: { name: paymentType } };
       const incomePage = await createPage(process.env.INCOME_DB_ID, incomeProps);
 
