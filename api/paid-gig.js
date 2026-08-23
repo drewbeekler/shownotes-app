@@ -1,4 +1,4 @@
-const { createPage, updatePage } = require('./_notion');
+const { createPage } = require('./_notion');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { gigName, typeOfSpot, location, amountPaid, additionalPay, gigContact, paymentType, paymentReceived, linkedShowNoteId, expenses } = req.body;
+    const { gigName, typeOfSpot, location, amountPaid, additionalPay, paymentType, paymentReceived, expenses } = req.body;
 
     const today = new Date().toISOString().split('T')[0];
     const name = gigName ? `${typeOfSpot} - ${gigName}` : `${typeOfSpot} - ${location}`;
@@ -23,24 +23,10 @@ module.exports = async (req, res) => {
     };
 
     if (additionalPay) properties['Additional Pay'] = { number: parseFloat(additionalPay) || 0 };
-    if (gigContact)    properties['Gig Contact']    = { rich_text: [{ text: { content: gigContact } }] };
     if (paymentType)   properties['Payment Type']   = { select: { name: paymentType } };
 
-    // Create the income entry (without relation first so it doesn't block on errors)
     const page = await createPage(process.env.INCOME_DB_ID, properties);
 
-    // Link to show note in a separate step — won't fail the whole request if property name is off
-    if (linkedShowNoteId) {
-      try {
-        await updatePage(page.id, {
-          'Show Notes': { relation: [{ id: linkedShowNoteId }] },
-        });
-      } catch (e) {
-        console.error('Show note relation error:', e.message);
-      }
-    }
-
-    // Create linked expense entries
     for (const exp of expenses || []) {
       if (!exp.type || !exp.amount) continue;
       try {

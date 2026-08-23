@@ -1,4 +1,4 @@
-const { createPage, updatePage } = require('./_notion');
+const { createPage } = require('./_notion');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -26,9 +26,9 @@ module.exports = async (req, res) => {
     };
     if (quickNote) properties['Quick Note'] = { rich_text: [{ text: { content: quickNote } }] };
 
-    const page = await createPage(process.env.SHOW_NOTES_DB_ID, properties);
+    await createPage(process.env.SHOW_NOTES_DB_ID, properties);
 
-    // Optionally create a linked income entry + expenses
+    // Optionally create an income entry + expenses
     if (paid) {
       const today = new Date().toISOString().split('T')[0];
       const incomeProps = {
@@ -41,19 +41,8 @@ module.exports = async (req, res) => {
       };
       if (paymentType) incomeProps['Payment Type'] = { select: { name: paymentType } };
 
-      // Create income entry first
       const incomePage = await createPage(process.env.INCOME_DB_ID, incomeProps);
 
-      // Link income → show note in a separate step
-      try {
-        await updatePage(incomePage.id, {
-          'Show Notes': { relation: [{ id: page.id }] },
-        });
-      } catch (e) {
-        console.error('Show note relation error:', e.message);
-      }
-
-      // Create linked expense entries
       for (const exp of expenses || []) {
         if (!exp.type || !exp.amount) continue;
         try {
@@ -70,7 +59,7 @@ module.exports = async (req, res) => {
       }
     }
 
-    res.status(200).json({ success: true, id: page.id });
+    res.status(200).json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
