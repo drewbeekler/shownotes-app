@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
 
     const properties = {
       'COMIC NAME':            { title: [{ text: { content: comicName.trim() } }] },
-      'BOOK THEM ON BIG WAVE': { checkbox: !!bookOnBigWave },
+      'BOOK THEM ON BIG WAVE ?': { checkbox: !!bookOnBigWave },
       'LOCATION':              { multi_select: (locations || []).map(l => ({ name: l })) },
       'Type of Contact':       { multi_select: (typeOfContact || []).map(t => ({ name: t })) },
     };
