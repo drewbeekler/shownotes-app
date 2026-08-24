@@ -451,11 +451,35 @@
   <div class="field">
     <div class="field-label">Location(s)</div>
     <div class="chip-group" id="locationChips">
-      <button class="chip" data-val="Barcelona" onclick="toggleChip(this)">Barcelona</button>
-      <button class="chip" data-val="London"    onclick="toggleChip(this)">London</button>
-      <button class="chip" data-val="France"    onclick="toggleChip(this)">France</button>
-      <button class="chip" data-val="New York"  onclick="toggleChip(this)">New York</button>
-      <button class="chip" data-val="LA"        onclick="toggleChip(this)">LA</button>
+      <button class="chip" data-val="New York"       onclick="toggleChip(this)">New York</button>
+      <button class="chip" data-val="Los Angeles"    onclick="toggleChip(this)">Los Angeles</button>
+      <button class="chip" data-val="Chicago"        onclick="toggleChip(this)">Chicago</button>
+      <button class="chip" data-val="Barcelona"      onclick="toggleChip(this)">Barcelona</button>
+      <button class="chip" data-val="London"         onclick="toggleChip(this)">London</button>
+      <button class="chip" data-val="Toronto"        onclick="toggleChip(this)">Toronto</button>
+      <button class="chip" data-val="San Francisco"  onclick="toggleChip(this)">San Francisco</button>
+      <button class="chip" data-val="Austin"         onclick="toggleChip(this)">Austin</button>
+      <button class="chip" data-val="Miami"          onclick="toggleChip(this)">Miami</button>
+      <button class="chip" data-val="Nashville"      onclick="toggleChip(this)">Nashville</button>
+      <button class="chip" data-val="Atlanta"        onclick="toggleChip(this)">Atlanta</button>
+      <button class="chip" data-val="Boston"         onclick="toggleChip(this)">Boston</button>
+      <button class="chip" data-val="Philly"         onclick="toggleChip(this)">Philly</button>
+      <button class="chip" data-val="Denver"         onclick="toggleChip(this)">Denver</button>
+      <button class="chip" data-val="Amsterdam"      onclick="toggleChip(this)">Amsterdam</button>
+      <button class="chip" data-val="France"         onclick="toggleChip(this)">France</button>
+      <button class="chip" data-val="Australia"      onclick="toggleChip(this)">Australia</button>
+      <button class="chip" data-val="Connecticut"    onclick="toggleChip(this)">Connecticut</button>
+      <button class="chip" data-val="Tampa"          onclick="toggleChip(this)">Tampa</button>
+      <button class="chip" data-val="New Orleans"    onclick="toggleChip(this)">New Orleans</button>
+      <button class="chip" data-val="Cleveland"      onclick="toggleChip(this)">Cleveland</button>
+      <button class="chip" data-val="Binghamton NY"  onclick="toggleChip(this)">Binghamton NY</button>
+      <button class="chip" data-val="North Carolina" onclick="toggleChip(this)">North Carolina</button>
+      <button class="chip" data-val="Montana"        onclick="toggleChip(this)">Montana</button>
+      <button class="chip" data-val="Massachusetts"  onclick="toggleChip(this)">Massachusetts</button>
+      <button class="chip" data-val="Other / New City" onclick="toggleCustomCity(this)">✏️ Other / New City</button>
+    </div>
+    <div id="customCityWrap" style="display:none; margin-top:8px;">
+      <input type="text" id="customCity" placeholder="Type city or region…" autocomplete="off">
     </div>
   </div>
 
@@ -655,6 +679,12 @@
 
   function toggle(btn) { btn.classList.toggle('on'); }
   function toggleChip(chip) { chip.classList.toggle('selected'); }
+  function toggleCustomCity(chip) {
+    chip.classList.toggle('selected');
+    const wrap = document.getElementById('customCityWrap');
+    wrap.style.display = chip.classList.contains('selected') ? 'block' : 'none';
+    if (!chip.classList.contains('selected')) document.getElementById('customCity').value = '';
+  }
   function togglePaid(btn) {
     btn.classList.toggle('on');
     document.getElementById('paidDetailsWrap').style.display = btn.classList.contains('on') ? 'block' : 'none';
@@ -758,7 +788,12 @@
           comicName,
           instagram:     document.getElementById('instagram').value.trim(),
           email:         document.getElementById('email').value.trim(),
-          locations:     getSelectedChips('locationChips'),
+          locations:     (() => {
+            const chips = getSelectedChips('locationChips').filter(v => v !== 'Other / New City');
+            const custom = document.getElementById('customCity').value.trim();
+            if (custom) chips.push(custom);
+            return chips;
+          })(),
           typeOfContact: getSelectedChips('typeChips'),
           bookOnBigWave: document.getElementById('togBook').classList.contains('on'),
           anotherInfo:   document.getElementById('anotherInfo').value.trim(),
@@ -773,8 +808,9 @@
   }
 
   function resetContact() {
-    ['comicName','instagram','email','anotherInfo'].forEach(id => document.getElementById(id).value = '');
+    ['comicName','instagram','email','anotherInfo','customCity'].forEach(id => document.getElementById(id).value = '');
     document.querySelectorAll('#contactView .chip, #contactView .toggle-btn').forEach(b => b.classList.remove('selected','on'));
+    document.getElementById('customCityWrap').style.display = 'none';
   }
 
   let expenseRowCount = 0;
