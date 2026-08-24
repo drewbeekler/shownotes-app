@@ -810,7 +810,7 @@
         })
       });
       const data = await res.json();
-      if (data.success) { toast(`✅ ${comicName} added!`); resetContact(); }
+      if (data.success) { toast(`✅ ${comicName} added!`); resetContact(); setTimeout(showDashboard, 1000); }
       else toast(`Error: ${data.error}`, 'error');
     } catch { toast('Connection error', 'error'); }
 
